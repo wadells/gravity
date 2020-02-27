@@ -8,7 +8,6 @@ def propagateParamsToEnv() {
 }
 
 properties([
-  disableConcurrentBuilds(),
   parameters([
     choice(choices: ["run", "skip"].join("\n"),
            defaultValue: 'run',
