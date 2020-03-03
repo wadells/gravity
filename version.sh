@@ -4,9 +4,9 @@
 #  - if on a tagged commit, use the tag
 #    e.g. 6.2.18 (for the commit tagged 6.2.18)
 #  - if last tag was a regular relase, bump the minor version, make a it a 'dev' pre-release, and append # of commits since tag
-#    e.g. 5.5.38-dev.5 (for 5 commits after 5.5.37)
+#    e.g. 5.5.38-dev.5+a1b2c3d4 (for commit a1b2c3d4 5 commits after 5.5.37)
 #  - if last tag was a pre-release tag (e.g. alpha, beta, rc), append number of commits since the tag
-#    e.g. 7.0.0-alpha.1.5 (for 5 commits after 7.0.0-alpha.1)
+#    e.g. 7.0.0-alpha.1.5+a1b2c3d4 (for commit a1b2c3d4 5 commits after 7.0.0-alpha.1)
 
 
 increment_patch() {
@@ -25,12 +25,13 @@ SHORT_TAG=`git describe --abbrev=0 --tags`
 LONG_TAG=`git describe --tags`
 COMMIT_WITH_LAST_TAG=`git rev-list -n1 ${SHORT_TAG}`
 COMMITS_SINCE_LAST_TAG=`git rev-list  ${COMMIT_WITH_LAST_TAG}..HEAD --count`
+SHORT_COMMIT_SHA=`git rev-parse --short HEAD`
 
 if [[ "$LONG_TAG" == "$SHORT_TAG" ]] ; then  # the current commit is tagged as a release
     echo "$SHORT_TAG"
 elif [[ "$SHORT_TAG" != *-* ]] ; then  # the current ref is not a decendent of a pre-release version
     SHORT_TAG=$(increment_patch ${SHORT_TAG})
-    echo "$SHORT_TAG-dev.${COMMITS_SINCE_LAST_TAG}"
+    echo "$SHORT_TAG-dev.${COMMITS_SINCE_LAST_TAG}+${SHORT_COMMIT_SHA}"
 else  # the current ref is a decendent of a pre-relase version (e.g. already an rc, alpha, or beta)
-    echo "$SHORT_TAG.${COMMITS_SINCE_LAST_TAG}"
+    echo "$SHORT_TAG.${COMMITS_SINCE_LAST_TAG}+${SHORT_COMMIT_SHA}"
 fi
