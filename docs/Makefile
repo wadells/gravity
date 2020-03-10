@@ -39,6 +39,7 @@ shell: $(DOCBOX_ID_FILE)
 	docker run -ti $(NOROOT) $(DOCKERFLAGS) $(DOCKERPORTS) $(DOCBOX) \
 		/bin/bash
 
+.PHONY:docbox
 $(DOCBOX_ID_FILE): Dockerfile
 	mkdir -p $(BUILDDIR)
 	docker build \
@@ -46,8 +47,9 @@ $(DOCBOX_ID_FILE): Dockerfile
 		--build-arg GID=$$(id -g) \
 		--build-arg HOME=$(HOME) \
 		--build-arg PORT=$(PORT) \
-	    --iidfile $(DOCBOX_ID_FILE) \
 		--tag $(DOCBOX) .
+	# prefer --iidfile to touch, but jenkin's docker is too old. See ops issue #141
+	touch $(DOCBOX_ID_FILE)
 
 # builds a docker container which is used for running `mkdocs`
 .PHONY:bbox
