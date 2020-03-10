@@ -26,20 +26,3 @@ http://localhost:6600/overview/ in your local browser.
 
 
 `make docs` will build the docs, so they are ready to ship to production.
-
-
-## Tools used to build the Docs
-
-Gravity docs are made with MkDocs and a few markdown extensions, First time users will need to install [MkDocs](https://www.mkdocs.org/#installation).
-
-To run the latest version of the docs on [http://127.0.0.1:8000](http://127.0.0.1:8000/quickstart):
-
-```bash
-$ ./run.sh
-```
-
-To run a specific version of the docs:
-
-```bash
-$ mkdocs serve --config-file 1.3.yaml
-```
