@@ -49,9 +49,7 @@ installer:
         count: 3
 
 # This section allows to define what flavors of servers are required for
-# this cluster. 
-#
-#
+# this cluster.
 nodeProfiles:
   - name: general
     description: "Master node with labels for running database and front-end facing containers"
@@ -111,4 +109,3 @@ hooks:
 # the helm call to upgrade.
   update:
     job: file://upgrade.yaml
-

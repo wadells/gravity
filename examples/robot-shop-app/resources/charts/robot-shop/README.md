@@ -1,6 +1,6 @@
 # Stan's Robot Shop
 
-Use this helm chart to customise your install of Stan's Robot Shop.
+Use this helm chart to customize your install of Stan's Robot Shop.
 
 
 ## Payment Gateway

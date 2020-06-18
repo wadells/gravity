@@ -4,26 +4,34 @@ This is an example online shopping app utilizing microservices in K8s with minor
 
 ![Robot Shop](robotshop.png)
 
+## Before You Begin
+
+Check your system requirements and download the `tele` binary following the [Gravity Quickstart](https://gravitational.com/gravity/docs/quickstart/).
 
 ## Building Cluster Image
-To construct the Robot Shop Cluster Image with a dependency-free .tar file use this command.  You can then deploy the Robot Shop as a self-contained, truely portable application for your preferred infrastructure. 
+
+To construct a dependency-free .tar file containing the Robot Shop Cluster Image use the following `tele` command:
+
 ```bash
 tele build -o robotshop.tar robot-shop-app/resources/app.yaml
 ```
 
-Further details on installing Gravity Cluster Images is available [here](https://gravitational.com/gravity/docs/installation/). 
+You can then deploy the Robot Shop as a self-contained, truly portable application for your preferred infrastructure.
+Further details on installing Gravity Cluster Images is available [here](https://gravitational.com/gravity/docs/installation/).
 
 
 ## Building Application
+
 In addition to Cluster Images, Gravity supports packaging application helm charts as self-contained application images. The application is then deployable in the same manner as helm charts to Gravity clusters. Further information on application packaging deployment is available [here](https://gravitational.com/gravity/docs/catalog/).
+
 ```bash
 tele build -o robotshop.tar robot-shop-app/resources/charts/robot-shop
 ```
 
-The Robot Shop web application runs in this configuration on a nodeport of 30085. 
+The Robot Shop web application runs in this configuration on a nodeport of 30085.
 
 ## Installing
-After deploying you should see the following available deployments:  
+After deploying you should see the following available deployments:
 
 ```bash
 $ kubectl get deployments
@@ -44,7 +52,7 @@ web         3/3     3            3           15h
 # Load generation
 Instana's github [repository](https://github.com/instana/robot-shop) contains load generation scripts. Pull down this repository if you'd like to execute load examples. After the application has deployed, change the load-gen/load-gen.sh file's HOST variable to the application deployment  (http://<my ip>:30085).
 Switch to the load-gen directory and run `load-gen.sh -n 20` to generate load from 20 clients.  Please explore the load script for other options.
-```  
+```
    Name                                                          # reqs      # fails     Avg     Min     Max  |  Median   req/s failures/s
 --------------------------------------------------------------------------------------------------------------------------------------------
  GET /                                                              2     0(0.00%)       5       3       7  |       3    0.10    0.00

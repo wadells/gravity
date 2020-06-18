@@ -4,60 +4,17 @@ This repository includes the necessary files to package and deploy [Wordpress](h
 
 This manifest uses the Open Elastic Block Store [OpenEBS](https://openebs.io/) built into Gravity 7.X.
 
-# System Requirements
+## Before You Begin
 
+Check your system requirements and download the `tele` binary following the [Gravity Quickstart](https://gravitational.com/gravity/docs/quickstart/).
 
-* A x86_64 Linux machine or a VM for building a Cluster Image that is running one of the [supported Linux distributions](requirements.md#linux-distributions).
-* Docker version 17 or newer. Run `docker info` before continuing to make sure
-  you have Docker up and running. We recommend following instructions on [installing Docker CE from Docker.com](https://docs.docker.com/install/)
-* You must be a member of the `docker` group. Run `groups` command to make sure
-  `docker` group is listed. If not, you can add yourself to the "docker" group via `sudo usermod -aG docker $USER`
-* You must have `git` installed to clone the example application repo.
-* At least one Linux node. . The nodes in a target cluster must have at least 2GB of RAM and 40GB of free disk space. They must **_not_** have Docker.
-* You must have `sudo` privileges on all nodes.
-
-
-## Step 1 Getting the Tools
-
-Start by [downloading Gravity](https://gravitational.com/gravity/download/) and
-unpacking the archive. You should see the following files:
-
-```
-$ ls -l
--rwxr-xr-x 1 user user 108093824 Apr 22 11:43 gravity
--rwxr-xr-x 1 user user       137 Apr 22 11:43 install.sh
--rw-r--r-- 1 user user     11357 Apr 22 11:43 LICENSE
--rw-r--r-- 1 user user      2880 Apr 22 11:43 README.md
--rwxr-xr-x 1 user user  84764672 Apr 22 11:43 tele
--rwxr-xr-x 1 user user  32488888 Apr 22 11:43 tsh
--rw-r--r-- 1 user user         6 Apr 22 11:43 VERSION
-```
-
-Execute `install.sh` to copy `tele` and `tsh` binaries to
-`/usr/local/bin/`. Then you can type `tele version` to confirm that
-everything works:
-
-```
-$ tele version
-Edition:        open-source
-Version:        7.0.1
-Git Commit:     af393fcddf8c675f00cf322ec054125d5e239727
-Helm Version:   v2.15
-```
-Clone the sample Git repository which contains the Kubernetes resources for
-[Wordpress](https://www.wordpress.org/), which we are using in this tutorial as a sample application:
-
-```bsh
-$ git clone https://github.com/gravitational/gravity.git
-$ cd gravity/examples
-```
-### Step 2: Creating the Kubernetes Resources
+## Creating the Kubernetes Resources
 
 Making Wordpress run on Kubernetes is easy. The examples repository you have
 cloned above includes the YAML definitions of Kubernetes objects. We'll use
 a Helm chart for this:
 
-```
+```bash
 $ tree wordpress/resources/charts/wordpress/
 wordpress/resources/charts/wordpress/
 ├── Chart.yaml
@@ -77,11 +34,11 @@ The values.yaml specifies several important values including
 You are welcome to modify this file and you can use --set and --values in the tele build process to replace these values. In this tutorial, we are packaging a single Helm chart but it is possible to have several of them packaged into a single Cluster Image.
 
 
-### Step 3: Building the Cluster Image
+## Building the Cluster Image
 Let's build the cluster image which will consist of a Kubernetes
 cluster with Wordpress pre-installed inside:
 
-```bsh
+```bash
 $ tele build -o wordpress.tar wordpress/resources/app.yaml
 Mon Apr 27 00:49:02 UTC Building cluster image wordpress 0.0.1
 Mon Apr 27 00:49:02 UTC Selecting base image version
@@ -131,7 +88,7 @@ servers (or into an AWS/GCE/Azure account).
 
 Congratulations! You have created your first **Kubernetes virtual appliance**!
 
-## Step 4 Installing
+## Installing
 
 Installing the `wordpress.tar` Cluster Image results in creating a Kubernetes
 cluster with the application pre-loaded. This file is the only artifact
@@ -174,7 +131,7 @@ Flag              | Description
 
 The command below will create a single-node Kubernetes cluster with Wordpress running inside:
 
-```
+```bash
 # We are executing this on the node named 'host' with IP address of 10.5.5.28
 $ sudo ./gravity install \
         --advertise-addr=10.5.5.28 \
@@ -250,14 +207,14 @@ Cluster endpoints:
 Navigate to `http://<node ip>:30080` to access the application.
 
   This is powered by the following service:
-```
+```bash
 $ sudo kubectl get service wordpress
 NAME        TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
 wordpress   NodePort   100.100.204.73   <none>        80:30080/TCP   75m
 ```
 
 **Note** that this is a single node deployment example.  You have the option of [joining](https://gravitational.com/gravity/docs/cluster/#adding-a-node) or installing with a different flavor.  The default flavor for this Cluster Manifest is small (1 node).  Other flavors include medium (3 nodes) and large (5 nodes).
-```
+```bash
 #Ex:
 
 $ sudo ./gravity install \
