@@ -389,7 +389,9 @@ TELEKUBE_IMPORT_OPTIONS := \
 		--version=$(TELEKUBE_APP_TAG)
 
 .PHONY: telekube-app
-telekube-app: k8s-app
+telekube-app: $(TELEKUBE_APP_OUT)
+
+$(TELEKUBE_APP_OUT): k8s-app
 	@echo -e "\n----> Building telekube-app...\n"
 	- $(GRAVITY) app delete $(TELEKUBE_APP_PKG) $(DELETE_OPTS) && \
 	  GRAVITY_K8S_VERSION=$(K8S_VER) $(GRAVITY) app import $(ASSETSDIR)/telekube $(VENDOR_OPTS) $(TELEKUBE_IMPORT_OPTIONS) && \

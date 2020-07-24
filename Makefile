@@ -160,6 +160,7 @@ SITE_APP_OUT := $(GRAVITY_BUILDDIR)/site-app.tar.gz
 DNS_APP_OUT := $(GRAVITY_BUILDDIR)/dns-app.tar.gz
 K8S_APP_OUT := $(GRAVITY_BUILDDIR)/kubernetes-app.tar.gz
 RBAC_APP_OUT := $(GRAVITY_BUILDDIR)/rbac-app.tar.gz
+ROBOTEST_OUT := $(GRAVITY_BUILDDIR)/robotest.tar
 TELEKUBE_APP_OUT := $(GRAVITY_BUILDDIR)/telekube-app.tar.gz
 TILLER_APP_OUT := $(GRAVITY_BUILDDIR)/tiller-app.tar.gz
 TELEKUBE_OUT := $(GRAVITY_BUILDDIR)/telekube.tar
@@ -169,7 +170,7 @@ SELINUX_ASSETS := $(SELINUX_ASSETSDIR)/gravity.pp.bz2 \
 		$(SELINUX_ASSETSDIR)/gravity.statedir.fc.template
 SELINUX_OUT := $(GRAVITY_BUILDDIR)/selinux-policy.tgz
 
-GRAVITY_DIR := /var/lib/gravity
+GRAVITY_DIR := $(GRAVITY_BUILDDIR)/gravity.dir
 GRAVITY_ASSETS_DIR := /usr/local/share/gravity
 
 LOCAL_OPSCENTER_HOST ?= opscenter.localhost.localdomain
@@ -448,8 +449,11 @@ k8s-packages: fio-package web-assets
 	-$(GRAVITY) app delete $(K8S_APP_PKG) $(DELETE_OPTS)
 	$(GRAVITY) app import $(K8S_APP_OUT) --version=$(K8S_APP_TAG) $(VENDOR_OPTS)
 
+$(TELEKUBE_APP_OUT):
+	make -C build.assets telekube-app
+
 .PHONY: telekube-packages
-telekube-packages:
+telekube-packages: $(TELEKUBE_APP_OUT)
 	-$(GRAVITY) app delete $(TELEKUBE_APP_PKG) $(DELETE_OPTS)
 	$(GRAVITY) app import $(TELEKUBE_APP_OUT) --version=$(TELEKUBE_APP_TAG) $(VENDOR_OPTS)
 
@@ -598,7 +602,7 @@ $(GRAVITY_BUILDDIR)/opscenter.tar: packages
 # opscenter-apps imports additional apps into deployed OpsCenter
 #
 .PHONY: opscenter-apps
-opscenter-apps:
+opscenter-apps: $(TELEKUBE_APP_OUT)
 	- $(GRAVITY_OUT) --state-dir=$(LOCAL_STATE_DIR) app delete $(TELEKUBE_APP_PKG) $(DELETE_OPTS) && \
 	  $(GRAVITY_OUT) --state-dir=$(LOCAL_STATE_DIR) app import $(TELEKUBE_APP_OUT) $(VENDOR_OPTS)
 
@@ -652,7 +656,30 @@ wizard-gen:
 	gravity ops create-wizard --ops-url=$(LOCAL_OPS_URL) gravitational.io/telekube:0.0.0+latest /tmp/telekube
 
 #
-# number of environment variables are expected to be set
+# builds robotest installer
+#
+.PHONY: robotest-tar
+robotest-tar: $(ROBOTEST_OUT)
+
+$(TELE_OUT):
+	$(MAKE) -C build.assets build
+
+$(GRAVITY_OUT):
+	$(MAKE) -C build.assets build
+
+ROBOTEST_SRC=$(shell find $(ASSETSDIR)/robotest/ -type f)
+
+$(ROBOTEST_OUT): TELE=$(TELE_OUT)
+$(ROBOTEST_OUT): $(TELE_OUT) $(ROBOTEST_SRC)
+	GRAVITY_K8S_VERSION=$(K8S_VER) $(TELE) build \
+		$(ASSETSDIR)/robotest/resources/app.yaml -f \
+		--version=$(TELEKUBE_APP_TAG) \
+		--state-dir=$(PACKAGES_DIR) \
+		--skip-version-check \
+		-o $(ROBOTEST_OUT)
+
+#
+# a number of environment variables are expected to be set
 # see https://github.com/gravitational/robotest/blob/master/suite/README.md
 #
 .PHONY: robotest-run-suite
