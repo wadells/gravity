@@ -136,6 +136,7 @@ LOCAL_GRAVITY_BUILDDIR ?= /gopath/src/github.com/gravitational/gravity/build/$(G
 # with tele build (e.g. opscenter or telekube)
 PACKAGES_DIR ?= $(GRAVITY_BUILDDIR)/packages
 
+
 # Outputs
 #
 # External assets
@@ -173,7 +174,6 @@ GRAVITY_ASSETS_DIR := /usr/local/share/gravity
 
 LOCAL_OPSCENTER_HOST ?= opscenter.localhost.localdomain
 LOCAL_OPSCENTER_DIR := $(GRAVITY_DIR)/opscenter
-LOCAL_ETCD_DIR := $(GRAVITY_DIR)/etcd
 LOCAL_OPS_URL := https://$(LOCAL_OPSCENTER_HOST):33009
 LOCAL_STATE_DIR ?= $(LOCAL_OPSCENTER_DIR)/read
 
