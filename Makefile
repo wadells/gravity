@@ -667,10 +667,10 @@ $(TELE_OUT):
 $(GRAVITY_OUT):
 	$(MAKE) -C build.assets build
 
-ROBOTEST_SRC=$(shell find $(ASSETSDIR)/robotest/ -type f)
+ROBOTEST_TAR_SRC=$(shell find $(ASSETSDIR)/robotest/ -type f)
 
 $(ROBOTEST_OUT): TELE=$(TELE_OUT)
-$(ROBOTEST_OUT): $(TELE_OUT) $(ROBOTEST_SRC)
+$(ROBOTEST_OUT): $(TELE_OUT) $(ROBOTEST_TAR_SRC) packages
 	GRAVITY_K8S_VERSION=$(K8S_VER) $(TELE) build \
 		$(ASSETSDIR)/robotest/resources/app.yaml -f \
 		--version=$(TELEKUBE_APP_TAG) \
@@ -683,11 +683,11 @@ $(ROBOTEST_OUT): $(TELE_OUT) $(ROBOTEST_SRC)
 # see https://github.com/gravitational/robotest/blob/master/suite/README.md
 #
 .PHONY: robotest-run-suite
-robotest-run-suite:
+robotest-run-suite: $(ROBOTEST_TAR)
 	./build.assets/robotest/run.sh pr $(shell pwd)/upgrade_from
 
 .PHONY: robotest-run-nightly
-robotest-run-nightly:
+robotest-run-nightly: $(ROBOTEST_TAR)
 	./build.assets/robotest/run.sh nightly $(shell pwd)/upgrade_from
 
 .PHONY: dev
